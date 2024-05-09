@@ -1,5 +1,14 @@
 import random
 
+import bchlib
+# https://github.com/jkent/python-bchlib/tree/master/.github
+# import bchlib; help(bchlib)
+
+import binascii
+import hashlib
+import os
+import random
+
 
 
 # pierwsza próbna implementacja 
@@ -109,13 +118,53 @@ def testuj(bity ,kodowanie , dekodowanie ):
     error_count = compare_bits(bity , decoded_bits)
     print("Liczba różniących się bitów:", error_count)
         
+def test_BCH(bytes):
+    print(bytes)
+    #predefined coder definition
 
+    bch = bchlib.BCH(1, m=5)
+    #calulate length of code words in bytes
+    max_data_len = bch.n // 8 - (bch.ecc_bits + 7) // 8
+    #calculate chanks for enccoding decoding
 
+    chank = len(bytes) // max_data_len;
+    codestring  = bytearray()
+
+    for i in range(chank):
+        ch = bytes[i*max_data_len:(i+1)*max_data_len]
+        ecc = bch.encode(ch)
+        codestring = codestring + ch + ecc
+
+    output = bytearray()
+    startPositionMessage = 0;
+    startPositionEcc = 0;
+    endPositionMessage = 0;
+    endPositionEcc = 0;
+
+    chankForDecoding = len(codestring) // (bch.n // 8)
+    for i in range(chankForDecoding):
+        startPositionMessage = i*(max_data_len + ((bch.ecc_bits + 7) // 8))
+        endPositionMessage = startPositionMessage + max_data_len
+        startPositionEcc = endPositionMessage
+        endPositionEcc = startPositionEcc + ((bch.ecc_bits + 7) // 8)
+
+        data = codestring[startPositionMessage:endPositionMessage]
+        ecc = codestring[startPositionEcc:endPositionEcc]
+        bch.data_len = max_data_len
+        nerr = bch.decode(data, ecc)
+        bch.correct(data, ecc)
+        output = output + data
+    print(output)
+
+def string_to_byte_array(input_string):
+    b = bytearray()
+    b.extend(map(ord, input_string))
+    return b
 
 # Przykład użycia
-data = "Przykladowy tekst"
-testuj(string_to_bits(data),triple_repeat_encode,triple_repeat_decode)
-
+data = "Przykladowy tekst."
+#testuj(string_to_bits(data),triple_repeat_encode,triple_repeat_decode)
+test_BCH(string_to_byte_array(data))
 
 
 
