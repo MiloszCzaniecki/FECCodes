@@ -2,7 +2,7 @@
 
 import random
 import bchlib
-from pyldpc import make_ldpc, encode, decode
+#from pyldpc import make_ldpc, encode, decode
 import binascii
 import hashlib
 import os

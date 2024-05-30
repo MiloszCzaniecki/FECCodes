@@ -1,12 +1,13 @@
 import random
+import numpy #as np
 
-from pyldpc import make_ldpc, encode, decode
+#from pyldpc import make_ldpc, encode, decode
 
 import binascii
 import hashlib
 import os
 import random
-import numpy as np
+
 
 from Functions import *     # Functions -> zawiera funkcje typu zamiany stringi na bajty itd.
 from RS import *            # RS 
@@ -38,7 +39,12 @@ def test(bity ,kodowanie , dekodowanie):
 data0 = "Przykladowy tekst."
 test(string_to_bits(data0),triple_repeat_encode,triple_repeat_decode)
 #test(string_to_bits(data0),ldpc_encode,ldpc_decode)
-test_BCH(string_to_byte_array(data0))
+#test_BCH(string_to_byte_array(data0))
+bch = BCH_Init()
+encodeData = BCH_ENCODE(bch,string_to_byte_array(data0))
+decodeData = BCH_DECODE(bch,encodeData)
+print(decodeData)
+
 
 
 
