@@ -1,6 +1,6 @@
 import random
 
-import bchlib
+# import bchlib
 # https://github.com/jkent/python-bchlib/tree/master/.github
 # import bchlib; help(bchlib)
 
@@ -8,6 +8,29 @@ import binascii
 import hashlib
 import os
 import random
+import numpy as np
+from turbo.awgn import AWGN
+from turbo.rsc  import RSC
+from turbo.trellis import Trellis
+from turbo.siso_decoder import SISODecoder
+from turbo.turbo_encoder import TurboEncoder
+from turbo.turbo_decoder import TurboDecoder
+from PIL import Image
+import numpy as np
+import random
+
+import commpy
+import numpy as np 
+import os
+
+
+from PIL import Image
+import numpy as np
+import random
+import os
+
+
+
 
 
 def string_to_bits(input_string):
@@ -135,6 +158,33 @@ def bits_to_string(bits):
     bytes_list = [binary_string[i:i+8] for i in range(0, len(binary_string), 8)]
     return ''.join(chr(int(byte, 2)) for byte in bytes_list)
 
+def png_to_bit_array(png_path):
+    # Otwórz obraz PNG
+    image = Image.open(png_path)
+    # Przekonwertuj obraz do tablicy numpy
+    image_array = np.array(image)
+    # Przekonwertuj tablicę numpy do jednowymiarowego ciągu bitów
+    bit_array = np.unpackbits(image_array)
+    # Zwróć bit array, kształt oryginalnego obrazu i tryb
+    return bit_array, image_array.shape, image.mode
+
+def bit_array_to_png(bit_array, output_path, original_shape, mode='RGBA'):
+    # Przekonwertuj jednowymiarowy ciąg bitów z powrotem do tablicy numpy
+    byte_array = np.packbits(bit_array)
+    # Debugowanie rozmiarów
+    print(f'Expected byte size: {np.prod(original_shape)}')
+    print(f'Actual byte size: {byte_array.size}')
+    # Sprawdzenie, czy rozmiar tablicy jest zgodny z oryginalnym kształtem
+    if byte_array.size != np.prod(original_shape):
+        raise ValueError("Rozmiar bufora nie jest zgodny z oryginalnym kształtem obrazu")
+    # Zmiana kształtu tablicy do oryginalnego kształtu obrazu
+    image_array = byte_array.reshape(original_shape)
+    # Konwersja tablicy numpy z powrotem do obrazu
+    image = Image.fromarray(image_array, mode=mode)
+    # Zapis obrazu jako plik PNG
+    image.save(output_path)
+
+
 
 def bits_to_hex(bits):
     """
@@ -184,10 +234,10 @@ def test_BCH(bytes):
         codestring = codestring + ch + ecc
 
     output = bytearray()
-    startPositionMessage = 0;
-    startPositionEcc = 0;
-    endPositionMessage = 0;
-    endPositionEcc = 0;
+    startPositionMessage = 0
+    startPositionEcc = 0
+    endPositionMessage = 0
+    endPositionEcc = 0
 
     chankForDecoding = len(codestring) // (bch.n // 8)
     for i in range(chankForDecoding):
@@ -211,11 +261,16 @@ def string_to_byte_array(input_string):
 
 # Przykład użycia
 data = "Przykladowy tekst."
-#testuj(string_to_bits(data),triple_repeat_encode,triple_repeat_decode)
-test_BCH(string_to_byte_array(data))
+# test_BCH(string_to_byte_array(data))
 
-#testuj(string_to_bits(data),triple_repeat_encode,triple_repeat_decode,gilbert_elliott_transmission)
+# testuj(string_to_bits(data),triple_repeat_encode,triple_repeat_decode,gilbert_elliott_transmission)
 #testuj(string_to_bits(data),triple_repeat_encode,triple_repeat_decode,bsc_transmission)
 
 
 
+interleaver = np.random.permutation(len(string_to_bits(data)))
+encoder = TurboEncoder(interleaver)
+decoder = TurboDecoder(interleaver)
+
+
+testuj(string_to_bits(data),encoder.execute,decoder.execute,gilbert_elliott_transmission)
