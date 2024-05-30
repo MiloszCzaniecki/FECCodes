@@ -1,5 +1,5 @@
 #plik zawierajacy funkcje uzywane we wszystkich kodach korekcyjnych
-
+from PIL import Image
 import random
 import bchlib
 #from pyldpc import make_ldpc, encode, decode
@@ -109,3 +109,29 @@ def compare_bytes(original_bytes, received_bytes):
         if original_bytes[i] != received_bytes[i]:
             count += 1
     return count
+
+def png_to_bit_array(png_path):
+    # Otwórz obraz PNG
+    image = Image.open(png_path)
+    # Przekonwertuj obraz do tablicy numpy
+    image_array = np.array(image)
+    # Przekonwertuj tablicę numpy do jednowymiarowego ciągu bitów
+    bit_array = np.unpackbits(image_array)
+    # Zwróć bit array, kształt oryginalnego obrazu i tryb
+    return bit_array, image_array.shape, image.mode
+
+def bit_array_to_png(bit_array, output_path, original_shape, mode='RGBA'):
+    # Przekonwertuj jednowymiarowy ciąg bitów z powrotem do tablicy numpy
+    byte_array = np.packbits(bit_array)
+    # Debugowanie rozmiarów
+    print(f'Expected byte size: {np.prod(original_shape)}')
+    print(f'Actual byte size: {byte_array.size}')
+    # Sprawdzenie, czy rozmiar tablicy jest zgodny z oryginalnym kształtem
+    if byte_array.size != np.prod(original_shape):
+        raise ValueError("Rozmiar bufora nie jest zgodny z oryginalnym kształtem obrazu")
+    # Zmiana kształtu tablicy do oryginalnego kształtu obrazu
+    image_array = byte_array.reshape(original_shape)
+    # Konwersja tablicy numpy z powrotem do obrazu
+    image = Image.fromarray(image_array, mode=mode)
+    # Zapis obrazu jako plik PNG
+    image.save(output_path)
