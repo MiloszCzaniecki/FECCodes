@@ -36,9 +36,10 @@ def test(bity ,kodowanie , dekodowanie):
 
 # Przykład użycia
 data0 = "Przykladowy tekst."
-test(string_to_bits(data0),triple_repeat_encode,triple_repeat_decode)
+#test(string_to_bits(data0),triple_repeat_encode,triple_repeat_decode)
 #test(string_to_bits(data0),ldpc_encode,ldpc_decode)
-test_BCH(string_to_byte_array(data0))
+#test_BCH(string_to_byte_array(data0))
+rs_encode(data0)
 
 
 
