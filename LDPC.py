@@ -1,7 +1,12 @@
+<<<<<<< HEAD
 # from pyldpc import make_ldpc, encode, decode, get_message
+=======
+'''from pyldpc import make_ldpc, encode, decode, get_message
+>>>>>>> 8de13a8e96f060fb045f2d35aae4c987a324d460
 import numpy as np
+from scikit-commpy.channelcoding import ldpc
 
-message = 'Dobry denj'
+message = 'Dzien dobry'
 
 #n = len(message) # ilosc bitow w zakodowanej wiadomosci
 #n = 15          # ilosc bitow w zakodowanej wiadomosci
@@ -16,7 +21,7 @@ message = 'Dobry denj'
 #x = get_message(G, decoded)               # zwraca wiadomosc zdekodowana
 #assert abs(x - v).sum() == 0              # porownanie z oryginalem
 
-'''
+
 def ldpc_encode(input_bits):
     # Calculate the length of the codeword
     n = len(input_bits)
