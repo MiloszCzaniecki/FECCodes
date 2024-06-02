@@ -1,20 +1,20 @@
-from pyldpc import make_ldpc, encode, decode, get_message
+# from pyldpc import make_ldpc, encode, decode, get_message
 import numpy as np
 
 message = 'Dobry denj'
 
-n = len(message) # ilosc bitow w zakodowanej wiadomosci
+#n = len(message) # ilosc bitow w zakodowanej wiadomosci
 #n = 15          # ilosc bitow w zakodowanej wiadomosci
-d_v = 4          # stopień zmiennej
-d_c = 5          # stopień sprawdzenia
-snr = 100        # sygnal do poglosu, signal-to-noise ratio
-H, G = make_ldpc(n, d_v, d_c, systematic=True, sparse=True) # macierz parzystosci i generacji
-k = G.shape[1]   # bity informacyjne
-v = np.random.randint(2, size=k)    # wektor dlugosci k
-encoded = encode(G, v, snr)               # zakodowanie
-decoded = decode(H, encoded, snr)               # zdekodowanie
-x = get_message(G, decoded)               # zwraca wiadomosc zdekodowana
-assert abs(x - v).sum() == 0              # porownanie z oryginalem
+#d_v = 4          # stopień zmiennej
+#d_c = 5          # stopień sprawdzenia
+#snr = 100        # sygnal do poglosu, signal-to-noise ratio
+#H, G = make_ldpc(n, d_v, d_c, systematic=True, sparse=True) # macierz parzystosci i generacji
+#k = G.shape[1]   # bity informacyjne
+#v = np.random.randint(2, size=k)    # wektor dlugosci k
+#encoded = encode(G, v, snr)               # zakodowanie
+#decoded = decode(H, encoded, snr)               # zdekodowanie
+#x = get_message(G, decoded)               # zwraca wiadomosc zdekodowana
+#assert abs(x - v).sum() == 0              # porownanie z oryginalem
 
 '''
 def ldpc_encode(input_bits):
