@@ -1,48 +1,47 @@
-<<<<<<< HEAD
-# from pyldpc import make_ldpc, encode, decode, get_message
-=======
-'''from pyldpc import make_ldpc, encode, decode, get_message
->>>>>>> 8de13a8e96f060fb045f2d35aae4c987a324d460
 import numpy as np
-from scikit-commpy.channelcoding import ldpc
+from pyldpc import make_ldpc, encode, decode, get_message
+import math
 
-message = 'Dzien dobry'
+def ldpc_encode(message, snr, d_v=4, d_c=5):
+    # Calculate n and k based on the message length
+    k = len(message)
 
-#n = len(message) # ilosc bitow w zakodowanej wiadomosci
-#n = 15          # ilosc bitow w zakodowanej wiadomosci
-#d_v = 4          # stopień zmiennej
-#d_c = 5          # stopień sprawdzenia
-#snr = 100        # sygnal do poglosu, signal-to-noise ratio
-#H, G = make_ldpc(n, d_v, d_c, systematic=True, sparse=True) # macierz parzystosci i generacji
-#k = G.shape[1]   # bity informacyjne
-#v = np.random.randint(2, size=k)    # wektor dlugosci k
-#encoded = encode(G, v, snr)               # zakodowanie
-#decoded = decode(H, encoded, snr)               # zdekodowanie
-#x = get_message(G, decoded)               # zwraca wiadomosc zdekodowana
-#assert abs(x - v).sum() == 0              # porownanie z oryginalem
-
-
-def ldpc_encode(input_bits):
-    # Calculate the length of the codeword
-    n = len(input_bits)
-    # Define LDPC code parameters
-    d_v = 3  # Number of ones in each column of H
-    d_c = 6  # Number of ones in each row of H
-    # Generate LDPC parity-check matrix
+    n = max(d_v, d_c)
+    while n % d_v != 0 or n % d_c != 0 or n < k:
+        n += 1
+    # Generate the LDPC code
     H, G = make_ldpc(n, d_v, d_c, systematic=True, sparse=True)
-    # Encode the input bits using LDPC
-    encoded_bits = encode(G, input_bits,snr=100)
+    print("Ksztalt macierzy parzystosci H:", H.shape)
+    print("Ksztalt macierzy generacji G:", G.shape)
 
-    return encoded_bits
+    padded_message = np.pad(message, (0, n - k), 'constant')
+    #transponowanie macierzy
+    G = G.T
 
-def ldpc_decode(encoded_bits):
-    n = len(encoded_bits)
-    # Define LDPC code parameters
-    d_v = 3  # Number of ones in each column of H
-    d_c = 6  # Number of ones in each row of H
-    # Generate LDPC parity-check matrix
+    # Encode the message
+    encoded_message = encode(G, padded_message, snr)
+    return encoded_message
+
+
+def ldpc_decode(received_message, snr, d_v=4, d_c=5):
+    # Calculate n and k based on the received message length
+    n = len(received_message)
+    k = n - (n // d_v) * d_v
+
+    # Generate the LDPC code
     H, G = make_ldpc(n, d_v, d_c, systematic=True, sparse=True)
-    # Decode the encoded bits using LDPC
-    decoded_bits = decode(H, encoded_bits,snr=100)
-    return decoded_bits
-'''
+
+    # Decode the received message
+    decoded_message = decode(H, received_message, snr, maxiter=100, log=True)
+    return decoded_message
+
+
+# Example usage:
+message = np.random.randint(2, size=520)  # 512-bit message
+snr = 10
+encoded_message = ldpc_encode(message, snr)
+received_message = encoded_message # + np.random.randint(2, size=len(encoded_message))  # Add some noise
+decoded_message = ldpc_decode(received_message, snr)
+
+print("Original message: ", message)
+print("Decoded message: ", decoded_message)
