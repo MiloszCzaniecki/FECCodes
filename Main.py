@@ -149,7 +149,6 @@ def triple_repeat_decode(input_bits):
         else:
             decoded_bits.append(0)
     return decoded_bits
-
 def bits_to_string(bits):
     """
     Funkcja odwracająca proces konwersji ciągu bitów na ciąg znaków.

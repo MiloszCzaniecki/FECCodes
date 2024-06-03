@@ -129,7 +129,7 @@ import commpy
 import numpy as np 
 import os
 
-
+import commpy.channelcoding.ldpc as ldpc
 from PIL import Image
 import numpy as np
 import random
@@ -137,6 +137,8 @@ import os
 import matplotlib.pyplot as plt
 # commpy.channel 
 # commpy.turbo_encoder()
+
+
 
 def png_to_bit_array(png_path):
     # Otwórz obraz PNG
@@ -191,7 +193,7 @@ output_path = get_relative_path(output_filename)
 bit_array, original_shape, mode,original_image = png_to_bit_array(input_path)
 
 # Symulacja wprowadzenia błędów do ciągu bitów
-error_rate = 0.05 # 1% bitów będzie zmienionych
+error_rate = 0.02 # 1% bitów będzie zmienionych
 bit_array_with_errors  = commpy.bsc(bit_array,error_rate)
 # bit_array_with_errors = introduce_errors(bit_array.copy(), error_rate)
 
