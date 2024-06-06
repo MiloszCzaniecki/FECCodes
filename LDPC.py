@@ -1,47 +1,24 @@
+
 import numpy as np
 from pyldpc import make_ldpc, encode, decode, get_message
-import math
 
-def ldpc_encode(message, snr, d_v=4, d_c=5):
-    # Calculate n and k based on the message length
-    k = len(message)
-
-    n = max(d_v, d_c)
-    while n % d_v != 0 or n % d_c != 0 or n < k:
-        n += 1
-    # Generate the LDPC code
-    H, G = make_ldpc(n, d_v, d_c, systematic=True, sparse=True)
-    print("Ksztalt macierzy parzystosci H:", H.shape)
-    print("Ksztalt macierzy generacji G:", G.shape)
-
-    padded_message = np.pad(message, (0, n - k), 'constant')
-    #transponowanie macierzy
-    G = G.T
-
-    # Encode the message
-    encoded_message = encode(G, padded_message, snr)
-    return encoded_message
+# n podzielne przez d_c 
 
 
-def ldpc_decode(received_message, snr, d_v=4, d_c=5):
-    # Calculate n and k based on the received message length
-    n = len(received_message)
-    k = n - (n // d_v) * d_v
+n = 35
+d_v = 4
+d_c = 5
+snr = 20
+H, G = make_ldpc(n, d_v, d_c, systematic=True, sparse=True)
+k = G.shape[1]
+print(k)
+# v = np.random.randint(2, size=k)
+v = [1,1,1,1,0,1,1,1,1,1]
+print(v)
 
-    # Generate the LDPC code
-    H, G = make_ldpc(n, d_v, d_c, systematic=True, sparse=True)
+y = encode(G, v, snr)
 
-    # Decode the received message
-    decoded_message = decode(H, received_message, snr, maxiter=100, log=True)
-    return decoded_message
-
-
-# Example usage:
-message = np.random.randint(2, size=520)  # 512-bit message
-snr = 10
-encoded_message = ldpc_encode(message, snr)
-received_message = encoded_message # + np.random.randint(2, size=len(encoded_message))  # Add some noise
-decoded_message = ldpc_decode(received_message, snr)
-
-print("Original message: ", message)
-print("Decoded message: ", decoded_message)
+d = decode(H, y, snr)
+x = get_message(G, d)
+print(x)
+assert abs(x - v).sum() == 0
