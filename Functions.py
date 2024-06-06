@@ -45,25 +45,60 @@ def distort_bits(input_bits, error_rate):
             distorted_bits += bit
     return distorted_bits
 
+# def bits_to_string(bits):
+#     """
+#     Funkcja odwracająca proces konwersji ciągu bitów na ciąg znaków.
+#     """
+#     return ''.join(chr(int(bits[i:i+8], 2)) for i in range(0, len(bits), 8))
 def bits_to_string(bits):
     """
-    Funkcja odwracająca proces konwersji ciągu bitów na ciąg znaków.
+    Funkcja odwracająca proces konwersji tablicy bitów na ciąg znaków.
     """
-    return ''.join(chr(int(bits[i:i+8], 2)) for i in range(0, len(bits), 8))
-
+    # Sprawdzenie, czy długość tablicy bitów jest podzielna przez 8
+    if len(bits) % 8 != 0:
+        raise ValueError("Długość tablicy bitów musi być wielokrotnością 8.")
+    
+    # Konwersja tablicy bitów na ciąg znaków
+    characters = []
+    for i in range(0, len(bits), 8):
+        byte = bits[i:i+8]
+        byte_string = ''.join(str(bit) for bit in byte)
+        characters.append(chr(int(byte_string, 2)))
+    
+    return ''.join(characters)
+# def bits_to_hex(bits):
+#     """
+#     Funkcja konwertująca ciąg bitów na reprezentację heksadecymalną.
+#     """
+#     hex_string = hex(int(bits, 2))
+#     return hex_string[2:]  # Usunięcie prefiksu '0x'
 def bits_to_hex(bits):
     """
-    Funkcja konwertująca ciąg bitów na reprezentację heksadecymalną.
+    Funkcja konwertująca tablicę bitów na reprezentację heksadecymalną.
     """
-    hex_string = hex(int(bits, 2))
+    # Konwersja tablicy bitów na łańcuch znaków
+    bits_string = ''.join(str(bit) for bit in bits)
+    # Konwersja łańcucha znaków na liczbę dziesiętną, a następnie na heksadecymalną
+    hex_string = hex(int(bits_string, 2))
     return hex_string[2:]  # Usunięcie prefiksu '0x'
+
+# def string_to_bits(input_string):
+#     """
+#     Funkcja konwertująca dany ciąg znaków na ciąg bitów.
+#     """
+#     return ''.join(format(ord(char), '08b') for char in input_string)
 
 def string_to_bits(input_string):
     """
-    Funkcja konwertująca dany ciąg znaków na ciąg bitów.
+    Funkcja konwertująca dany ciąg znaków na tablicę bitów.
     """
-    return ''.join(format(ord(char), '08b') for char in input_string)
-
+    bits = []
+    for char in input_string:
+        # Konwersja znaku na jego reprezentację binarną
+        bin_value = format(ord(char), '08b')
+        # Dodawanie poszczególnych bitów do listy
+        bits.extend(int(bit) for bit in bin_value)
+    return bits
 def string_to_byte_array(input_string):
     b = bytearray()
     b.extend(map(ord, input_string))

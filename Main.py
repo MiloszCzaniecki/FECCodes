@@ -8,7 +8,7 @@ from Functions import *
 from Channels import *
 from BCH import *
 from LDPC import *
-from RS import *
+# from RS import *
 
 import binascii
 import hashlib
@@ -17,6 +17,7 @@ import random
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import TripleRepeat 
 '''
 from turbo.awgn import AWGN
 from turbo.rsc  import RSC
@@ -28,8 +29,6 @@ from turbo.turbo_decoder import TurboDecoder
 from PIL import Image
 import numpy as np
 import random
-
-#import commpy
 import numpy as np 
 import os
 
@@ -41,11 +40,7 @@ import os
 
 
 def testuj(bity, kodowanie, dekodowanie, model):
-    error_array = [0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 0.4, 0.47, 0.5]
-    ecc_array = ["bch", "ldpc", "repeat", "rs"]
-    file_path = "FEC_Results.txt"
-    for error_rate in error_array:
-        for ecc_name in ecc_array:
+
             print("wchodzący  ciąg bitów:".ljust(30), bits_to_hex(bity))
             encoded_bits = kodowanie(bity)
             # print("Zakodowany ciąg bitów:".ljust(40), encoded_bits,bits_to_hex( encoded_bits))
@@ -64,18 +59,18 @@ def testuj(bity, kodowanie, dekodowanie, model):
             error_count = compare_bits(bity, decoded_bits)
             print("Liczba różniących się bitów: ", error_count)
 
-            error_enc = error_rate
-            error_dec = error_count / bity
+            # error_enc = error_rate #encrypted 
+            # error_dec = error_count / bity # decrypted 
 
 
-            if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
-                with open(file_path, "w") as file:
-                    file.write("")
+            # if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
+            #     with open(file_path, "w") as file:
+            #         file.write("")
 
-            with open(file_path, "a") as file:
-                file.write(f"{ecc_name} {error_enc} {error_dec} \n")
+            # with open(file_path, "a") as file:
+            #     file.write(f"{ecc_name} {error_enc} {error_dec} \n")
 
-            file.close()
+            # file.close()
 
 
 
@@ -115,18 +110,65 @@ def graph(file_path):
 
 
 # Przykład użycia
-data = "Przykladowy tekst."
 # test_BCH(string_to_byte_array(data))
 
 # testuj(string_to_bits(data),triple_repeat_encode,triple_repeat_decode,gilbert_elliott_transmission)
 #testuj(string_to_bits(data),triple_repeat_encode,triple_repeat_decode,bsc_transmission)
 
+def all_test():
+    data = [
+        [1,0,0,1,0,1,0,1],
+        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+        
 
-'''
-interleaver = np.random.permutation(len(string_to_bits(data)))
-encoder = TurboEncoder(interleaver)
-decoder = TurboDecoder(interleaver)
+    ] 
+
+    error_array = [0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 0.4, 0.47, 0.5]
+    ecc_funcs_names = ["bch", "ldpc", "repeat", "rs"]
+    ecc_funcs_encodes = [TripleRepeat.triple_repeat_encode]
+    ecc_funcs_decodes = [TripleRepeat.triple_repeat_decode]  
+    file_path = "FEC_Results.txt"
+
+    error_models_names = ["gilberta-elliota", "bsc"] 
+    error_models = [gilbert_elliott_transmission,bsc_transmission]
+
+    for model_iter in range(2):
+        for data_type in data :
+            for error_rate in error_array:
+                for ecc_iter in range(len(ecc_funcs_encodes)):
+                    opis = f"nazwa: {ecc_funcs_names[ecc_iter]}, błąd wejściowy : {error_rate}, model kanału : {error_models_names[model_iter]}  "
+                    print("opis: "+ opis)
+                    print("model iter "+ " " + str(model_iter))
+                    testuj(data_type,ecc_funcs_encodes[ecc_iter],ecc_funcs_decodes[ecc_iter],error_models[model_iter])
+                
 
 
-testuj(string_to_bits(data),encoder.execute,decoder.execute,gilbert_elliott_transmission)
-'''
+data = "Przykladowy tekst."
+
+
+
+print(string_to_bits(data))
+
+testuj(string_to_bits(data),TripleRepeat.triple_repeat_encode,TripleRepeat.triple_repeat_decode,gilbert_elliott_transmission)
+
+
+
+# all_test()
+
+
+
+    
+
+
+
+         
+
+
+
+
+# interleaver = np.random.permutation(len(string_to_bits(data)))
+# encoder = TurboEncoder(interleaver)
+# decoder = TurboDecoder(interleaver)
+
+
+# testuj(string_to_bits(data),encoder.execute,decoder.execute,gilbert_elliott_transmission)
