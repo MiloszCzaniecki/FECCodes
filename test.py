@@ -164,7 +164,6 @@ def bit_array_to_png(bit_array, output_path, original_shape, mode='RGBA'):
     # Zapis obrazu jako plik PNG
     image.save(output_path)
     return image 
-
 def introduce_errors(bit_array, error_rate=0.01):
     total_bits = len(bit_array)
     num_errors = int(total_bits * error_rate)
@@ -189,10 +188,11 @@ output_path = get_relative_path(output_filename)
 
 # Konwersja PNG do ciągu bitów
 bit_array, original_shape, mode,original_image = png_to_bit_array(input_path)
-
+import Channels
 # Symulacja wprowadzenia błędów do ciągu bitów
 error_rate = 0.05 # 1% bitów będzie zmienionych
-bit_array_with_errors  = commpy.bsc(bit_array,error_rate)
+# bit_array_with_errors  = commpy.bsc(bit_array,error_rate)
+bit_array_with_errors = Channels.bsc_transmission(bit_array,error_rate) 
 # bit_array_with_errors = introduce_errors(bit_array.copy(), error_rate)
 
 # Konwersja ciągu bitów z powrotem do PNG z błędami
