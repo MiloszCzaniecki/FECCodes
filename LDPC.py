@@ -2,9 +2,6 @@
 import numpy as np
 from pyldpc import make_ldpc, encode, decode, get_message
 
-# n podzielne przez d_c 
-
-
 n = 35
 d_v = 4
 d_c = 5

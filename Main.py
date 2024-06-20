@@ -180,13 +180,13 @@ def all_test():
         [1,0,0,1,0,1,0,1],
         [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
         np.random.randint(2, size=500),
-        np.random.randint(2, size=1000)
+        np.random.randint(2, size=1000) 
 
     ] 
 
     error_array = [0.01, 0.02, 0.03,0.04, 0.05 ,0.07 , 0.1, 0.13, 0.15,0.17, 0.2 ,0.23,0.25, 0.27 ,0.3, 0.33 ,0.35 ,0.37,0.4 ,0.43 ,0.45, 0.47, 0.5]
     ecc_funcs_names = ["repeat", "rs","bch", "ldpc" ]
-    ecc_funcs_encodes = [TripleRepeat.triple_repeat_encode] # tu dopisać resztę jak będzie działać 
+    ecc_funcs_encodes = [TripleRepeat.triple_repeat_encode,reedsolomon.encodeRSC] # tu dopisać resztę jak będzie działać 
     ecc_funcs_decodes = [TripleRepeat.triple_repeat_decode,reedsolomon.decodeRSC]  
     file_path = "FEC_Results.txt"
 

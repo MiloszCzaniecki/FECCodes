@@ -121,96 +121,107 @@
 # #         bit_array[index] = 1 - bit_array[index]  # Odwracanie bitu
 # #     return bit_array
 
-from PIL import Image
-import numpy as np
-import random
+# from PIL import Image
+# import numpy as np
+# import random
 
-import commpy
-import numpy as np 
-import os
-
-
-from PIL import Image
-import numpy as np
-import random
-import os
-import matplotlib.pyplot as plt
-# commpy.channel 
-# commpy.turbo_encoder()
-
-def png_to_bit_array(png_path):
-    # Otwórz obraz PNG
-    image = Image.open(png_path)
-    # Przekonwertuj obraz do tablicy numpy
-    image_array = np.array(image)
-    # Przekonwertuj tablicę numpy do jednowymiarowego ciągu bitów
-    bit_array = np.unpackbits(image_array)
-    # Zwróć bit array, kształt oryginalnego obrazu i tryb
-    return bit_array, image_array.shape, image.mode, image
-
-def bit_array_to_png(bit_array, output_path, original_shape, mode='RGBA'):
-    # Przekonwertuj jednowymiarowy ciąg bitów z powrotem do tablicy numpy
-    byte_array = np.packbits(bit_array)
-    # Debugowanie rozmiarów
-    print(f'Expected byte size: {np.prod(original_shape)}')
-    print(f'Actual byte size: {byte_array.size}')
-    # Sprawdzenie, czy rozmiar tablicy jest zgodny z oryginalnym kształtem
-    if byte_array.size != np.prod(original_shape):
-        raise ValueError("Rozmiar bufora nie jest zgodny z oryginalnym kształtem obrazu")
-    # Zmiana kształtu tablicy do oryginalnego kształtu obrazu
-    image_array = byte_array.reshape(original_shape)
-    # Konwersja tablicy numpy z powrotem do obrazu
-    image = Image.fromarray(image_array, mode=mode)
-    # Zapis obrazu jako plik PNG
-    image.save(output_path)
-    return image 
-def introduce_errors(bit_array, error_rate=0.01):
-    total_bits = len(bit_array)
-    num_errors = int(total_bits * error_rate)
-    error_indices = random.sample(range(total_bits), num_errors)
-    for index in error_indices:
-        bit_array[index] = 1 - bit_array[index]  # Odwracanie bitu
-    return bit_array
-
-def get_relative_path(filename):
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    return os.path.join(script_dir, filename)
-
-# Przykład użycia
-# input_filename = 'purple-flower.png'
-input_filename = 'rosesmall.jpg'
-
-output_filename = 'decoded_with_errors.png'
-
-# Uzyskanie ścieżek względnych
-input_path = get_relative_path(input_filename)
-output_path = get_relative_path(output_filename)
-
-# Konwersja PNG do ciągu bitów
-bit_array, original_shape, mode,original_image = png_to_bit_array(input_path)
-import Channels
-# Symulacja wprowadzenia błędów do ciągu bitów
-error_rate = 0.05 # 1% bitów będzie zmienionych
-# bit_array_with_errors  = commpy.bsc(bit_array,error_rate)
-bit_array_with_errors = Channels.bsc_transmission(bit_array,error_rate) 
-# bit_array_with_errors = introduce_errors(bit_array.copy(), error_rate)
-
-# Konwersja ciągu bitów z powrotem do PNG z błędami
-decoded_image = bit_array_to_png(bit_array_with_errors, output_path, original_shape, mode)
-fig, axs = plt.subplots(1, 2, figsize=(12, 6))
+# import commpy
+# import numpy as np 
+# import os
 
 
-# Oryginalny obraz
-axs[0].imshow(original_image)
-axs[0].set_title('Oryginalny obraz')
-axs[0].axis('off')
+# from PIL import Image
+# import numpy as np
+# import random
+# import os
+# import matplotlib.pyplot as plt
+# # commpy.channel 
+# # commpy.turbo_encoder()
 
-# Zmodyfikowany obraz
-axs[1].imshow(decoded_image)
-axs[1].set_title('Obraz z błędami')
-axs[1].axis('off')
+# def png_to_bit_array(png_path):
+#     # Otwórz obraz PNG
+#     image = Image.open(png_path)
+#     # Przekonwertuj obraz do tablicy numpy
+#     image_array = np.array(image)
+#     # Przekonwertuj tablicę numpy do jednowymiarowego ciągu bitów
+#     bit_array = np.unpackbits(image_array)
+#     # Zwróć bit array, kształt oryginalnego obrazu i tryb
+#     return bit_array, image_array.shape, image.mode, image
 
-plt.show()
+# def bit_array_to_png(bit_array, output_path, original_shape, mode='RGBA'):
+#     # Przekonwertuj jednowymiarowy ciąg bitów z powrotem do tablicy numpy
+#     byte_array = np.packbits(bit_array)
+#     # Debugowanie rozmiarów
+#     print(f'Expected byte size: {np.prod(original_shape)}')
+#     print(f'Actual byte size: {byte_array.size}')
+#     # Sprawdzenie, czy rozmiar tablicy jest zgodny z oryginalnym kształtem
+#     if byte_array.size != np.prod(original_shape):
+#         raise ValueError("Rozmiar bufora nie jest zgodny z oryginalnym kształtem obrazu")
+#     # Zmiana kształtu tablicy do oryginalnego kształtu obrazu
+#     image_array = byte_array.reshape(original_shape)
+#     # Konwersja tablicy numpy z powrotem do obrazu
+#     image = Image.fromarray(image_array, mode=mode)
+#     # Zapis obrazu jako plik PNG
+#     image.save(output_path)
+#     return image 
+# def introduce_errors(bit_array, error_rate=0.01):
+#     total_bits = len(bit_array)
+#     num_errors = int(total_bits * error_rate)
+#     error_indices = random.sample(range(total_bits), num_errors)
+#     for index in error_indices:
+#         bit_array[index] = 1 - bit_array[index]  # Odwracanie bitu
+#     return bit_array
+
+# def get_relative_path(filename):
+#     script_dir = os.path.dirname(os.path.abspath(__file__))
+#     return os.path.join(script_dir, filename)
+
+# # Przykład użycia
+# # input_filename = 'purple-flower.png'
+# input_filename = 'rosesmall.jpg'
+
+# output_filename = 'decoded_with_errors.png'
+
+# # Uzyskanie ścieżek względnych
+# input_path = get_relative_path(input_filename)
+# output_path = get_relative_path(output_filename)
+
+# # Konwersja PNG do ciągu bitów
+# bit_array, original_shape, mode,original_image = png_to_bit_array(input_path)
+# import Channels
+# # Symulacja wprowadzenia błędów do ciągu bitów
+# error_rate = 0.05 # 1% bitów będzie zmienionych
+# # bit_array_with_errors  = commpy.bsc(bit_array,error_rate)
+# bit_array_with_errors = Channels.bsc_transmission(bit_array,error_rate) 
+# # bit_array_with_errors = introduce_errors(bit_array.copy(), error_rate)
+
+# # Konwersja ciągu bitów z powrotem do PNG z błędami
+# decoded_image = bit_array_to_png(bit_array_with_errors, output_path, original_shape, mode)
+# fig, axs = plt.subplots(1, 2, figsize=(12, 6))
+
+
+# # Oryginalny obraz
+# axs[0].imshow(original_image)
+# axs[0].set_title('Oryginalny obraz')
+# axs[0].axis('off')
+
+# # Zmodyfikowany obraz
+# axs[1].imshow(decoded_image)
+# axs[1].set_title('Obraz z błędami')
+# axs[1].axis('off')
+
+# plt.show()
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -378,3 +389,177 @@ plt.show()
 
 #         self.assertListEqual(list(encoded_vector[::3]), decoded_vector)
 # unittest.main()
+
+
+
+
+
+
+
+
+
+
+# import bchlib
+# import matplotlib.pyplot as plt
+
+# # import bchlib
+# # from galois import GF2
+
+# # Określ parametry kodu BCH
+# t = 3  # Maksymalna liczba korygowanych błędów
+# m = 7  # Liczba bitów informacyjnych
+
+# # Utwórz ciało GF(2)
+# gf = GF2()
+
+# # Wygeneruj wielomian generujący (wymaga modyfikacji kodu bchlib)
+# g = bchlib.bch_poly.generator(t, m, gf)  # Załóżmy, że bchlib posiada funkcję generator
+
+
+# # Określ parametry kodu BCH
+# t = 3  # Maksymalna liczba korygowanych błędów
+# m = 7  # Liczba bitów informacyjnych
+
+# # Wygeneruj wielomian generujący
+# g = bchlib.gf2poly.generator(t, m)
+
+
+# # Utwórz obiekt kodera i dekoder
+# encoder = bchlib.BCH(g)
+# decoder = bchlib.BCH(g)
+
+# # Zdefiniuj zakres długości danych wejściowych
+# data_lengths = range(1, m + t + 1)
+
+# # Zbierz dane do wykresu
+# data_lengths_x = []
+# num_errors_y = []
+
+# for data_length in data_lengths:
+#     # Zakoduj dane wejściowe
+#     encoded_data = encoder.encode(data_length * [0])
+
+#     # Wprowadź błędy do zakodowanych danych
+#     error_bits = random.sample(range(len(encoded_data)), min(t, data_length))
+#     for error_bit in error_bits:
+#         encoded_data[error_bit] ^= 1
+
+#     # Zdekoduj dane z błędami
+#     decoded_data, num_errors = decoder.decode(encoded_data)
+
+#     # Zgromadź dane do wykresu
+#     data_lengths_x.append(data_length)
+#     num_errors_y.append(num_errors)
+
+# # Utwórz wykres
+# plt.plot(data_lengths_x, num_errors_y, marker='o', linestyle='-')
+# plt.xlabel('Długość danych')
+# plt.ylabel('Liczba skorygowanych błędów')
+# plt.title(f'Zachowanie kodu BCH (t={t}, m={m})')
+# plt.grid(True)
+# plt.show()
+
+
+
+import numpy as np 
+import random as r 
+
+def generate_bits(quantity,random=True,value =1):
+    if(random):
+        return [r.random.randint(0, 1) for i in range(0, quantity)]
+    return [value for i in range(0,quantity)]
+
+
+
+# binary symmetric channel; p to prawdopodobieństwo przekłamania bitu
+
+def bsc(input_array, p_of_error):
+    output_array = np.empty(shape=input_array.shape, dtype='int')
+    for i in range(len(input_array)):
+        for j in range(len(input_array[i])):
+            if r.random() < p_of_error:
+                if input_array[i][j] == 0:
+                    output_array[i][j] = 1
+                else:
+                    output_array[i][j] = 0
+            else:
+                output_array[i][j] = input_array[i][j]
+    return output_array
+
+# bsc działajacy na liście list
+
+
+def bsc_lists(input_list, p_of_error):
+    output_list = [[] for i in range(len(input_list))]
+    for i in range(len(input_list)):
+        for j in range(len(input_list[i])):
+            if r.random() < p_of_error:
+                if input_list[i][j] == 0:
+                    output_list[i].append(1)
+                else:
+                    output_list[i].append(0)
+            else:
+                output_list[i].append(input_list[i][j])
+    return output_list
+
+
+# kanał Gilberta; p_of_good_to_bad to pr. przejścia ze stanu 'dobrego' do 'zlego', p_of_bad_to_good - pr. odwrotnego przejscia
+
+def gilbert(input_array, p_of_error_when_good, p_of_good_to_bad, p_of_error_when_bad, p_of_bad_to_good):
+    output_array = np.empty(shape=input_array.shape, dtype='int')
+    good_state = True  # true oznacza stan poprawnej transmisji, false - stan przekłamań
+    for i in range(len(input_array)):
+        for j in range(len(input_array[i])):
+            if good_state: # jestesmy w dobrym stanie
+                if r.random() < p_of_error_when_good:
+                    if input_array[i][j] == 0:
+                        output_array[i][j] = 1
+                    else:
+                        output_array[i][j] = 0
+                else:
+                    output_array[i][j] = input_array[i][j]
+                good_state = r.random() > p_of_good_to_bad
+            else: # jestesmy w zlym stanie
+                if r.random() < p_of_error_when_bad:
+                    if input_array[i][j] == 0:
+                        output_array[i][j] = 1
+                    else:
+                        output_array[i][j] = 0
+                else:
+                    output_array[i][j] = input_array[i][j]
+                good_state = r.random() > (1 - p_of_bad_to_good)
+    return output_array
+
+# kanał gilberta działający na liście list
+
+
+def gilbert_lists(input_list, p_of_error_when_good, p_of_good_to_bad, p_of_error_when_bad, p_of_bad_to_good):
+    output_list = [[] for i in range(len(input_list))]
+    good_state = True  # true oznacza stan poprawnej transmisji, false - stan przekłamań
+    for i in range(len(input_list)):
+        for j in range(len(input_list[i])):
+            if good_state: # jestesmy w dobrym stanie
+                if r.random() < p_of_error_when_good:
+                    if input_list[i][j] == 0:
+                        output_list[i].append(1)
+                    else:
+                        output_list[i].append(0)
+                else:
+                    output_list[i].append(input_list[i][j])
+                good_state = r.random() > p_of_good_to_bad
+            else: # jestesmy w zlym stanie
+                if r.random() < p_of_error_when_bad:
+                    if input_list[i][j] == 0:
+                        output_list[i].append(1)
+                    else:
+                        output_list[i].append(0)
+                else:
+                    output_list[i].append(input_list[i][j])
+                good_state = r.random() > (1 - p_of_bad_to_good)
+    return output_list
+
+from numpy import array
+listain = generate_bits(100,False,1)
+print(listain)
+out = gilbert_lists(array([i for i in listain]), *(0.000001, 0.000101648, 0.31, 0.914789))
+print(out)
