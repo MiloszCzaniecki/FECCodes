@@ -170,3 +170,34 @@ def bit_array_to_png(bit_array, output_path, original_shape, mode='RGBA'):
     image = Image.fromarray(image_array, mode=mode)
     # Zapis obrazu jako plik PNG
     image.save(output_path)
+
+def png_to_bit_array(png_path):
+    # Otwórz obraz PNG
+    image = Image.open(png_path)
+    # Przekonwertuj obraz do tablicy numpy
+    image_array = np.array(image)
+    # Przekonwertuj tablicę numpy do jednowymiarowego ciągu bitów
+    bit_array = np.unpackbits(image)
+    # Zwróć bit array, kształt oryginalnego obrazu i tryb
+    return bit_array, image_array.shape, image.mode, image
+
+def bit_array_to_png(bit_array, output_path, original_shape, mode='RGBA'):
+    # Przekonwertuj jednowymiarowy ciąg bitów z powrotem do tablicy numpy
+    byte_array = np.packbits(bit_array)
+    # Debugowanie rozmiarów
+    print(f'Expected byte size: {np.prod(original_shape)}')
+    print(f'Actual byte size: {byte_array.size}')
+    # Sprawdzenie, czy rozmiar tablicy jest zgodny z oryginalnym kształtem
+    if byte_array.size != np.prod(original_shape):
+        raise ValueError("Rozmiar bufora nie jest zgodny z oryginalnym kształtem obrazu")
+    # Zmiana kształtu tablicy do oryginalnego kształtu obrazu
+    image_array = byte_array.reshape(original_shape)
+    # Konwersja tablicy numpy z powrotem do obrazu
+    image = Image.fromarray(image_array, mode=mode)
+    # Zapis obrazu jako plik PNG
+    image.save(output_path)
+    return image
+
+def get_relative_path(filename):
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(script_dir, filename)

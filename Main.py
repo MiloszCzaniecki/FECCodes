@@ -1,13 +1,14 @@
 import random
 
+from BCH import BCH_Init, BCH_ENCODE, BCH_DECODE
 # import bchlib
 # https://github.com/jkent/python-bchlib/tree/master/.github
 # import bchlib; help(bchlib)
 
 from Functions import *
 from Channels import *
-from BCH import *
-from LDPC import *
+#from BCH import *
+#from LDPC import *
 import reedsolomon
 
 import binascii
@@ -17,7 +18,11 @@ import random
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import TripleRepeat 
+import TripleRepeat
+import pickle
+from PIL import Image
+import io
+
 '''
 from turbo.awgn import AWGN
 from turbo.rsc  import RSC
@@ -42,7 +47,7 @@ from PIL import Image
 import numpy as np
 import random
 
-import commpy
+# import commpy
 import numpy as np 
 import os
 
@@ -54,8 +59,7 @@ import os
 import matplotlib.pyplot as plt
 import Channels
 
-def testuj(bity, kodowanie, dekodowanie, model,error_rate ,img = False,ilosc_powtorzen = 20 ):
-
+def testuj(bity, kodowanie, dekodowanie, model,error_rate ,img = False,ilosc_powtorzen = 20):
             arr= [] 
             for i in range (ilosc_powtorzen):
                 encoded_bits = kodowanie(bity)
@@ -94,40 +98,7 @@ def testuj(bity, kodowanie, dekodowanie, model,error_rate ,img = False,ilosc_pow
 
             # file.close()
 
-
-def png_to_bit_array(png_path):
-    # Otwórz obraz PNG
-    image = Image.open(png_path)
-    # Przekonwertuj obraz do tablicy numpy
-    image_array = np.array(image)
-    # Przekonwertuj tablicę numpy do jednowymiarowego ciągu bitów
-    bit_array = np.unpackbits(image)
-    # Zwróć bit array, kształt oryginalnego obrazu i tryb
-    return bit_array, image_array.shape, image.mode, image
-
-def bit_array_to_png(bit_array, output_path, original_shape, mode='RGBA'):
-    # Przekonwertuj jednowymiarowy ciąg bitów z powrotem do tablicy numpy
-    byte_array = np.packbits(bit_array)
-    # Debugowanie rozmiarów
-    print(f'Expected byte size: {np.prod(original_shape)}')
-    print(f'Actual byte size: {byte_array.size}')
-    # Sprawdzenie, czy rozmiar tablicy jest zgodny z oryginalnym kształtem
-    if byte_array.size != np.prod(original_shape):
-        raise ValueError("Rozmiar bufora nie jest zgodny z oryginalnym kształtem obrazu")
-    # Zmiana kształtu tablicy do oryginalnego kształtu obrazu
-    image_array = byte_array.reshape(original_shape)
-    # Konwersja tablicy numpy z powrotem do obrazu
-    image = Image.fromarray(image_array, mode=mode)
-    # Zapis obrazu jako plik PNG
-    image.save(output_path)
-    return image 
-
-
-def get_relative_path(filename):
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    return os.path.join(script_dir, filename)
-
-def test_img(nazwa,opis,kodowanie, dekodowanie, model,error_rate ):
+def test_img(nazwa, opis, kodowanie, dekodowanie, model, error_rate):
     input_filename = f'{nazwa}.jpg'
 
     output_filename = f'out/{opis}_img.png'
@@ -289,27 +260,28 @@ def all_test():
 
 
 
+# Wczytaj obraz z pliku
+image_path = './/image//kartinka.jpg'
+image = Image.open(image_path)
+
+# Serializuj obraz do tablicy bajtów za pomocą pickle
+image_byte_array = pickle.dumps(image)
+bch = BCH_Init()
+encodeMessage = BCH_ENCODE(bch, image_byte_array)
+image_byte_array_decode = BCH_DECODE(bch, encodeMessage)
+
+
+# Aby sprawdzić, możemy deserializować i wyświetlić obraz
+loaded_image = pickle.loads(image_byte_array_decode)
+loaded_image.show()
 
 data = "Przykladowy tekst."
 
-
-
-print(string_to_bits(data))
+#print(string_to_bits(data))
 
 # out_err_count=testuj(string_to_bits(data),TripleRepeat.triple_repeat_encode,TripleRepeat.triple_repeat_decode,gilbert_elliott_transmission, 0.2)
-# print(f"out: {out_err_count}" )
+ #print(f"out: {out_err_count}" )
 all_test()
-
-
-
-    
-
-
-
-         
-
-
-
 
 # interleaver = np.random.permutation(len(string_to_bits(data)))
 # encoder = TurboEncoder(interleaver)
