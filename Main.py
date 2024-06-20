@@ -1,13 +1,14 @@
 import random
 
+from BCH import BCH_Init, BCH_ENCODE, BCH_DECODE
 # import bchlib
 # https://github.com/jkent/python-bchlib/tree/master/.github
 # import bchlib; help(bchlib)
 
 from Functions import *
 from Channels import *
-from BCH import *
-from LDPC import *
+#from BCH import *
+#from LDPC import *
 import reedsolomon
 
 import binascii
@@ -17,7 +18,11 @@ import random
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import TripleRepeat 
+import TripleRepeat
+import pickle
+from PIL import Image
+import io
+
 '''
 from turbo.awgn import AWGN
 from turbo.rsc  import RSC
@@ -42,7 +47,7 @@ from PIL import Image
 import numpy as np
 import random
 
-import commpy
+# import commpy
 import numpy as np 
 import os
 
@@ -289,15 +294,30 @@ def all_test():
 
 
 
+# Wczytaj obraz z pliku
+image_path = './/image//kartinka.jpg'
+image = Image.open(image_path)
+
+# Serializuj obraz do tablicy bajtów za pomocą pickle
+image_byte_array = pickle.dumps(image)
+bch = BCH_Init()
+encodeMessage = BCH_ENCODE(bch, image_byte_array)
+
+image_byte_array_decode = BCH_DECODE(bch,encodeMessage)
+
+
+# Aby sprawdzić, możemy deserializować i wyświetlić obraz
+loaded_image = pickle.loads(image_byte_array_decode)
+loaded_image.show()
 
 data = "Przykladowy tekst."
 
 
 
-print(string_to_bits(data))
+#print(string_to_bits(data))
 
 # out_err_count=testuj(string_to_bits(data),TripleRepeat.triple_repeat_encode,TripleRepeat.triple_repeat_decode,gilbert_elliott_transmission, 0.2)
-# print(f"out: {out_err_count}" )
+ #print(f"out: {out_err_count}" )
 all_test()
 
 

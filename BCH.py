@@ -1,7 +1,6 @@
 import bchlib
 
 
-# https://github.com/jkent/python-bchlib/tree/master/.github
 # import bchlib; help(bchlib)
 
 def test_BCH(bytes):
@@ -53,7 +52,7 @@ def BCH_ENCODE(bch, bytes):
     max_data_len = bch.n // 8 - (bch.ecc_bits + 7) // 8
     # calculate chanks for enccoding decoding
 
-    chank = len(bytes) // max_data_len;
+    chank = len(bytes) // max_data_len
     codestring = bytearray()
 
     for i in range(chank):
