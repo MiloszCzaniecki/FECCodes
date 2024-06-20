@@ -59,8 +59,7 @@ import os
 import matplotlib.pyplot as plt
 import Channels
 
-def testuj(bity, kodowanie, dekodowanie, model,error_rate ,img = False,ilosc_powtorzen = 20 ):
-
+def testuj(bity, kodowanie, dekodowanie, model,error_rate ,img = False,ilosc_powtorzen = 20):
             arr= [] 
             for i in range (ilosc_powtorzen):
                 encoded_bits = kodowanie(bity)
@@ -99,40 +98,7 @@ def testuj(bity, kodowanie, dekodowanie, model,error_rate ,img = False,ilosc_pow
 
             # file.close()
 
-
-def png_to_bit_array(png_path):
-    # Otwórz obraz PNG
-    image = Image.open(png_path)
-    # Przekonwertuj obraz do tablicy numpy
-    image_array = np.array(image)
-    # Przekonwertuj tablicę numpy do jednowymiarowego ciągu bitów
-    bit_array = np.unpackbits(image)
-    # Zwróć bit array, kształt oryginalnego obrazu i tryb
-    return bit_array, image_array.shape, image.mode, image
-
-def bit_array_to_png(bit_array, output_path, original_shape, mode='RGBA'):
-    # Przekonwertuj jednowymiarowy ciąg bitów z powrotem do tablicy numpy
-    byte_array = np.packbits(bit_array)
-    # Debugowanie rozmiarów
-    print(f'Expected byte size: {np.prod(original_shape)}')
-    print(f'Actual byte size: {byte_array.size}')
-    # Sprawdzenie, czy rozmiar tablicy jest zgodny z oryginalnym kształtem
-    if byte_array.size != np.prod(original_shape):
-        raise ValueError("Rozmiar bufora nie jest zgodny z oryginalnym kształtem obrazu")
-    # Zmiana kształtu tablicy do oryginalnego kształtu obrazu
-    image_array = byte_array.reshape(original_shape)
-    # Konwersja tablicy numpy z powrotem do obrazu
-    image = Image.fromarray(image_array, mode=mode)
-    # Zapis obrazu jako plik PNG
-    image.save(output_path)
-    return image 
-
-
-def get_relative_path(filename):
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    return os.path.join(script_dir, filename)
-
-def test_img(nazwa,opis,kodowanie, dekodowanie, model,error_rate ):
+def test_img(nazwa, opis, kodowanie, dekodowanie, model, error_rate):
     input_filename = f'{nazwa}.jpg'
 
     output_filename = f'out/{opis}_img.png'
@@ -190,9 +156,9 @@ def all_test():
     ] 
 
     error_array = [0.01, 0.02, 0.03,0.04, 0.05 ,0.07 , 0.1, 0.13, 0.15,0.17, 0.2 ,0.23,0.25, 0.27 ,0.3, 0.33 ,0.35 ,0.37,0.4 ,0.43 ,0.45, 0.47, 0.5]
-    ecc_funcs_names = ["repeat", "rs","bch", "ldpc" ]
+    ecc_funcs_names = ["repeat", "rs", "bch", "ldpc" ]
     ecc_funcs_encodes = [TripleRepeat.triple_repeat_encode] # tu dopisać resztę jak będzie działać 
-    ecc_funcs_decodes = [TripleRepeat.triple_repeat_decode,reedsolomon.decodeRSC]  
+    ecc_funcs_decodes = [TripleRepeat.triple_repeat_decode, reedsolomon.decodeRSC]
     file_path = "FEC_Results.txt"
 
     error_models_names = ["gilberta-elliota", "bsc"] 
@@ -302,8 +268,7 @@ image = Image.open(image_path)
 image_byte_array = pickle.dumps(image)
 bch = BCH_Init()
 encodeMessage = BCH_ENCODE(bch, image_byte_array)
-
-image_byte_array_decode = BCH_DECODE(bch,encodeMessage)
+image_byte_array_decode = BCH_DECODE(bch, encodeMessage)
 
 
 # Aby sprawdzić, możemy deserializować i wyświetlić obraz
@@ -312,24 +277,11 @@ loaded_image.show()
 
 data = "Przykladowy tekst."
 
-
-
 #print(string_to_bits(data))
 
 # out_err_count=testuj(string_to_bits(data),TripleRepeat.triple_repeat_encode,TripleRepeat.triple_repeat_decode,gilbert_elliott_transmission, 0.2)
  #print(f"out: {out_err_count}" )
 all_test()
-
-
-
-    
-
-
-
-         
-
-
-
 
 # interleaver = np.random.permutation(len(string_to_bits(data)))
 # encoder = TurboEncoder(interleaver)
