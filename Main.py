@@ -1,19 +1,15 @@
 import random
 
 from BCH import BCH_Init, BCH_ENCODE, BCH_DECODE
-# import bchlib
 # https://github.com/jkent/python-bchlib/tree/master/.github
 # import bchlib; help(bchlib)
 
 from Functions import *
 from Channels import *
-#from BCH import *
-#from LDPC import *
+
 import reedsolomon
 
-import binascii
-import hashlib
-import os
+
 import random
 import numpy as np
 import pandas as pd
@@ -23,41 +19,9 @@ import pickle
 from PIL import Image
 import io
 
-'''
-from turbo.awgn import AWGN
-from turbo.rsc  import RSC
-from turbo.trellis import Trellis
-from turbo.siso_decoder import SISODecoder
-from turbo.turbo_encoder import TurboEncoder
-from turbo.turbo_decoder import TurboDecoder
-'''
-from PIL import Image
-import numpy as np
-import random
-import numpy as np 
-import os
-
 
 from PIL import Image
-import numpy as np
-import random
-import os
 
-from PIL import Image
-import numpy as np
-import random
-
-# import commpy
-import numpy as np 
-import os
-
-
-from PIL import Image
-import numpy as np
-import random
-import os
-import matplotlib.pyplot as plt
-import Channels
 
 def testuj(bity, kodowanie, dekodowanie, model,error_rate ,img = False,ilosc_powtorzen = 20):
             arr= [] 
@@ -146,88 +110,128 @@ def test_img(nazwa, opis, kodowanie, dekodowanie, model, error_rate):
 
 
 def all_test():
-    data_names = [" różne krótkie (8bit)","same 0 (24bit)","długie (500bit) ","długie (1000bit) "]
+    data_names = [" 50bit"," 100bit"," 500bit"," 1000bit"]
     data = [
-        [1,0,0,1,0,1,0,1],
-        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        np.random.randint(2, size=50),
+        np.random.randint(2, size=100),
         np.random.randint(2, size=500),
         np.random.randint(2, size=1000) 
 
     ] 
 
     error_array = [0.01, 0.02, 0.03,0.04, 0.05 ,0.07 , 0.1, 0.13, 0.15,0.17, 0.2 ,0.23,0.25, 0.27 ,0.3, 0.33 ,0.35 ,0.37,0.4 ,0.43 ,0.45, 0.47, 0.5]
-    ecc_funcs_names = ["repeat", "rs","bch", "ldpc" ]
-    ecc_funcs_encodes = [TripleRepeat.triple_repeat_encode,reedsolomon.encodeRSC] # tu dopisać resztę jak będzie działać 
-    ecc_funcs_decodes = [TripleRepeat.triple_repeat_decode,reedsolomon.decodeRSC]  
+    ecc_funcs_names = ["powtórzeniowego", "rs","bch", "ldpc" ]
+    ecc_funcs_encodes = [TripleRepeat.triple_repeat_encode] # tu dopisać resztę jak będzie działać 
+    ecc_funcs_decodes = [TripleRepeat.triple_repeat_decode]  
     file_path = "FEC_Results.txt"
 
     error_models_names = ["gilberta-elliota", "bsc"] 
     error_models = [gilbert_elliott_transmission,bsc_transmission]
+
+
     results = []
 
     for ecc_iter in range(len(ecc_funcs_encodes)):
         for model_iter in range(2):
-            for error_rate in error_array:
-                for i, data_type in enumerate(data_names):
-
+            for i, data_type in enumerate(data_names):
+                for error_rate in error_array:
                     opis = f"nazwa: {ecc_funcs_names[ecc_iter]}, błąd wejściowy : {error_rate}, model kanału : {error_models_names[model_iter]}  "
                     print("opis: "+ opis)
                     print("model iter "+ " " + str(model_iter))
-                    out_err_rate = testuj(data[i], ecc_funcs_encodes[ecc_iter], ecc_funcs_decodes[ecc_iter], error_models[model_iter],error_rate)
-                    print("out:" + str(out_err_rate))
+                    out_err_rates = testuj(data[i], ecc_funcs_encodes[ecc_iter], ecc_funcs_decodes[ecc_iter], error_models[model_iter],error_rate)
+                    avg_out_err_rate = np.mean(out_err_rates)  # Obliczamy średnią z wyników
+                    print("out:" + str(out_err_rates))
                     results.append({
                         'ecc_name': ecc_funcs_names[ecc_iter],
                         'model_name': error_models_names[model_iter],
                         'data_type': data_type,
                         'error_rate': error_rate,
-                        'out_err_rate': out_err_rate
+                        'avg_out_err_rate': avg_out_err_rate
                     })
-                # opisimg = f"nazwa_{ecc_funcs_names[ecc_iter]}_blad_wejsciowy_{error_rate}_model_kanału_{error_models_names[model_iter]}_img "
-                # out_err_rate = test_img('rosesmall',opisimg, ecc_funcs_encodes[ecc_iter], ecc_funcs_decodes[ecc_iter], error_models[model_iter],error_rate)
-
-
 
     # Konwersja wyników do DataFrame
     df = pd.DataFrame(results)
 
-    # Generowanie wykresów
-    for ecc_name in df['ecc_name'].unique():
-        for model_name in df['model_name'].unique():
+    # Generowanie wykresów porównujących wszystkie typy danych
+    for model_name in df['model_name'].unique():
+        for ecc_name in df['ecc_name'].unique():
+            plt.figure()
+            plt.figure().set_figwidth(20)
+            plt.figure().set_figheight(5)
             for data_type in df['data_type'].unique():
                 subset = df[(df['ecc_name'] == ecc_name) & (df['model_name'] == model_name) & (df['data_type'] == data_type)]
-                
-                plt.figure()
-                plt.plot(subset['error_rate'], subset['out_err_rate'], marker='o')
-                plt.title(f'ECC: {ecc_name}, Model: {model_name}, Data: {data_type}')
-                plt.xlabel('Błąd wejściowy')
-                plt.ylabel('Błąd wyjściowy')
-                plt.grid(True)
-                
-                # Zapisz wykres
-                filename = f'out/{ecc_name}_{model_name}_{data_type}.png'
-                plt.savefig(filename)
-                plt.close()
-    # for ecc_iter in range(len(ecc_funcs_encodes)):
+                plt.plot(subset['error_rate'], subset['avg_out_err_rate'], marker='o', label=data_type)
+            
+            plt.title(f'Pięciokrotna zwiększenie p kodu  {ecc_name} w modelu {model_name} w zależności od błędu wejściowego',loc='center',wrap=True)
+            plt.xlabel('Błąd wejściowy')
+            plt.ylabel('Średni błąd wyjściowy')
+            
+            plt.grid(True)
+            plt.legend()
+            
+            # Zapisz wykres
+            filename = f'{ecc_name}_{model_name}_data_comparison.png'
+            plt.savefig(filename)
+            plt.close()
+
+
+
+
+    results = []
+
+    for ecc_iter in range(len(ecc_funcs_encodes)):
+        for model_iter in range(2):
+            for i, data_type in enumerate(data_names):
+                for error_rate in error_array:
+                    opis = f"nazwa: {ecc_funcs_names[ecc_iter]}, błąd wejściowy : {error_rate}, model kanału : {error_models_names[model_iter]}  "
+                    print("opis: "+ opis)
+                    print("model iter "+ " " + str(model_iter))
+                    out_err_rates = testuj(data[i], ecc_funcs_encodes[ecc_iter], ecc_funcs_decodes[ecc_iter], error_models[model_iter],error_rate)
+                    avg_out_err_rate = np.mean(out_err_rates)  # Obliczamy średnią z wyników
+                    print("out:" + str(out_err_rates))
+                    results.append({
+                        'ecc_name': ecc_funcs_names[ecc_iter],
+                        'model_name': error_models_names[model_iter],
+                        'data_type': data_type,
+                        'error_rate': error_rate,
+                        'avg_out_err_rate': avg_out_err_rate
+                    })
+
+    # Konwersja wyników do DataFrame
+    df = pd.DataFrame(results)
+
+    # Generowanie wykresów porównujących wszystkie metody kodowania
+    for model_name in df['model_name'].unique():
+        for data_type in df['data_type'].unique():
+            plt.figure()
+            for ecc_name in df['ecc_name'].unique():
+                subset = df[(df['model_name'] == model_name) & (df['data_type'] == data_type) & (df['ecc_name'] == ecc_name)]
+                plt.plot(subset['error_rate'], subset['avg_out_err_rate'], marker='o', label=ecc_name)
+            
+            plt.title(f'Model: {model_name}, Data: {data_type}')
+            plt.xlabel('Błąd wejściowy')
+            plt.ylabel('Średni błąd wyjściowy')
+            plt.grid(True)
+            plt.legend()
+            
+            # Zapisz wykres
+            filename = f'{model_name}_{data_type}_comparison.png'
+            plt.savefig(filename)
+            plt.close()
         
-    #     for model_iter in range(2):
-    #         for data_type in data :
-    #             for error_rate in error_array:
-    #                 opis = f"nazwa: {ecc_funcs_names[ecc_iter]}, błąd wejściowy : {error_rate}, model kanału : {error_models_names[model_iter]}  "
-    #                 print("opis: "+ opis)
-    #                 print("model iter "+ " " + str(model_iter))
-    #                 out_err_rate =testuj(data_type,ecc_funcs_encodes[ecc_iter],ecc_funcs_decodes[ecc_iter],error_models[model_iter],error_rate)
-    #                 # print("out:" + out_err_rate)
-    #                 print(f"out: {out_err_rate}" )
+
+
     # results = []
 
     # for ecc_iter in range(len(ecc_funcs_encodes)):
     #     for model_iter in range(2):
-    #         for data_type in data:
-    #             for error_rate in error_array:
+    #         for error_rate in error_array:
+    #             for i, data_type in enumerate(data_names):
+
     #                 opis = f"nazwa: {ecc_funcs_names[ecc_iter]}, błąd wejściowy : {error_rate}, model kanału : {error_models_names[model_iter]}  "
     #                 print("opis: "+ opis)
     #                 print("model iter "+ " " + str(model_iter))
-    #                 out_err_rate = testuj(data_type, ecc_funcs_encodes[ecc_iter], ecc_funcs_decodes[ecc_iter], error_models[model_iter],error_rate)
+    #                 out_err_rate = testuj(data[i], ecc_funcs_encodes[ecc_iter], ecc_funcs_decodes[ecc_iter], error_models[model_iter],error_rate)
     #                 print("out:" + str(out_err_rate))
     #                 results.append({
     #                     'ecc_name': ecc_funcs_names[ecc_iter],
@@ -236,6 +240,10 @@ def all_test():
     #                     'error_rate': error_rate,
     #                     'out_err_rate': out_err_rate
     #                 })
+    #             # opisimg = f"nazwa_{ecc_funcs_names[ecc_iter]}_blad_wejsciowy_{error_rate}_model_kanału_{error_models_names[model_iter]}_img "
+    #             # out_err_rate = test_img('rosesmall',opisimg, ecc_funcs_encodes[ecc_iter], ecc_funcs_decodes[ecc_iter], error_models[model_iter],error_rate)
+
+
 
     # # Konwersja wyników do DataFrame
     # df = pd.DataFrame(results)
@@ -254,38 +262,9 @@ def all_test():
     #             plt.grid(True)
                 
     #             # Zapisz wykres
-    #             filename = f'{ecc_name}_{model_name}_{data_type}.png'
+    #             filename = f'out/{ecc_name}_{model_name}_{data_type}.png'
     #             plt.savefig(filename)
     #             plt.close()
-
-
-
-# Wczytaj obraz z pliku
-image_path = './/image//kartinka.jpg'
-image = Image.open(image_path)
-
-# Serializuj obraz do tablicy bajtów za pomocą pickle
-image_byte_array = pickle.dumps(image)
-bch = BCH_Init()
-encodeMessage = BCH_ENCODE(bch, image_byte_array)
-image_byte_array_decode = BCH_DECODE(bch, encodeMessage)
-
-
-# Aby sprawdzić, możemy deserializować i wyświetlić obraz
-loaded_image = pickle.loads(image_byte_array_decode)
-loaded_image.show()
-
-data = "Przykladowy tekst."
-
-#print(string_to_bits(data))
-
-# out_err_count=testuj(string_to_bits(data),TripleRepeat.triple_repeat_encode,TripleRepeat.triple_repeat_decode,gilbert_elliott_transmission, 0.2)
- #print(f"out: {out_err_count}" )
+    
 all_test()
 
-# interleaver = np.random.permutation(len(string_to_bits(data)))
-# encoder = TurboEncoder(interleaver)
-# decoder = TurboDecoder(interleaver)
-
-
-# testuj(string_to_bits(data),encoder.execute,decoder.execute,gilbert_elliott_transmission)
