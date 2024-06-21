@@ -77,12 +77,12 @@ def process_large_array_decode(int_array, dodatkowe_bajty ):
 
     return processed_int_array
 
-encoded,bajty  = process_large_array_encode(arr)
-print("\n\n")
-print("encoded",encoded)
-print("\n\n")
+# encoded,bajty  = process_large_array_encode(arr)
+# print("\n\n")
+# print("encoded",encoded)
+# print("\n\n")
 
 
 
-decoded = process_large_array_decode(encoded,bajty )
-print("zdekododwane",decoded)
+# decoded = process_large_array_decode(encoded,bajty )
+# print("zdekododwane",decoded)

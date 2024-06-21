@@ -158,7 +158,7 @@ if __name__ == "__main__":
     data_lengths = [200, 250, 500, 1000, 10000]  # Różne długości danych wejściowych
     # data_lengths = 100  # Testowanie dla jednej długości
 
-    num_errors = [10, 20, 70, 100, 200]  # Liczba błędów do wprowadzenia
+    num_errors = [10, 20, 70, 100, 127]  # Liczba błędów do wprowadzenia
 
     for length in data_lengths:
         for errors in num_errors:

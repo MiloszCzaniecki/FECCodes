@@ -266,5 +266,25 @@ def all_test():
     #             plt.savefig(filename)
     #             plt.close()
     
-all_test()
+# all_test()
+
+# Wczytaj obraz z pliku
+image_path = './/image//kartinka.jpg'
+image = Image.open(image_path)
+
+# Serializuj obraz do tablicy bajtów za pomocą pickle
+image_byte_array = pickle.dumps(image)
+bch = BCH_Init()
+encodeMessage = BCH_ENCODE(bch, image_byte_array)
+
+image_byte_array_decode = BCH_DECODE(bch,encodeMessage)
+
+
+# Aby sprawdzić, możemy deserializować i wyświetlić obraz
+loaded_image = pickle.loads(image_byte_array_decode)
+loaded_image.show()
+
+data = "Przykladowy tekst."
+
+
 
